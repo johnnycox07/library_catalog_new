@@ -51,7 +51,7 @@ class BookService:
                 raise BookAlreadyExistsException(book_data.isbn)
 
         # 3. Обогащение данных из Open Library
-        extra = await self.enrich_book_data(book_data)
+        extra = await self._enrich_book_data(book_data)
 
         # 4. Создание в БД
         book = await self.book_repo.create(
