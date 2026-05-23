@@ -138,7 +138,7 @@ class BookService:
             tuple: (список книг, общее количество)
         """
         # Получить книги
-        books = await self.book_repo.count_by_filters(
+        books = await self.book_repo.find_by_filters(
             title=title,
             author=author,
             genre=genre,
