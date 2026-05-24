@@ -46,7 +46,6 @@ class BookRepository(BaseRepository[Book]):
             select(Book).where(Book.isbn == isbn)
         )
         return result.scalar_one_or_none()
-        pass
 
     async def count_by_filters(
             self,
