@@ -12,6 +12,7 @@ from .core.database import dispose_engine
 from .core.exceptions import register_exception_handlers
 from .core.logging_config import setup_logging
 from .api.v1.routers import books, health
+from .external.openlibrary.client import get_openlibrary_client
 
 
 # ========== LIFECYCLE EVENTS ==========
@@ -33,6 +34,8 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     await dispose_engine()
+    ol_client = get_openlibrary_client()
+    await ol_client.close()
     print("👋 Application stopped")
 
 
