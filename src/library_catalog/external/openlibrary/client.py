@@ -1,4 +1,6 @@
 import httpx
+from functools import lru_cache
+
 from ..base.base_client import BaseApiClient
 from ...domain.exceptions import OpenLibraryException, OpenLibraryTimeoutException
 
@@ -128,4 +130,6 @@ class OpenLibraryClient(BaseApiClient):
 
         return result
 
-
+@lru_cache
+def get_openlibrary_client() -> OpenLibraryClient:
+    return OpenLibraryClient()
