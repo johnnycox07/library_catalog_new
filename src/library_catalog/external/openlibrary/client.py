@@ -128,10 +128,4 @@ class OpenLibraryClient(BaseApiClient):
 
         return result
 
-    def _get_cover_url(self, cover_id: int | None) -> str | None:
-        """Получить URL обложки."""
-        if not cover_id:
-            return None
-        return f"https://covers.openlibrary.org/b/id/{cover_id}-L.jpg"
-
 
