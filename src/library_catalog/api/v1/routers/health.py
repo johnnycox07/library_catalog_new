@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import status as http_status
+from fastapi.responses import JSONResponse
 
 from ..schemas.common import HealthCheckResponse
 from ...dependencies import DbSessionDep
@@ -25,11 +27,9 @@ async def health_check(db: DbSessionDep):
     # Простой запрос к БД
     try:
         await db.execute(text("SELECT 1"))
-        db_status = "connected"
+        return HealthCheckResponse(status="healthy", database="connected")
     except Exception:
-        db_status = "disconnected"
-
-    return HealthCheckResponse(
-        status="healthy",
-        database=db_status,
-    )
+        return JSONResponse(
+            status_code=http_status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "unhealthy", "database": "disconnected"},
+        )
