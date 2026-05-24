@@ -1,4 +1,6 @@
 import httpx
+from functools import lru_cache
+
 from ..base.base_client import BaseApiClient
 from ...domain.exceptions import OpenLibraryException, OpenLibraryTimeoutException
 
@@ -128,10 +130,6 @@ class OpenLibraryClient(BaseApiClient):
 
         return result
 
-    def _get_cover_url(self, cover_id: int | None) -> str | None:
-        """Получить URL обложки."""
-        if not cover_id:
-            return None
-        return f"https://covers.openlibrary.org/b/id/{cover_id}-L.jpg"
-
-
+@lru_cache
+def get_openlibrary_client() -> OpenLibraryClient:
+    return OpenLibraryClient()

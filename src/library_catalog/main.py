@@ -3,6 +3,7 @@ Library Catalog API - Точка входа приложения.
 """
 
 from contextlib import asynccontextmanager
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +13,9 @@ from .core.database import dispose_engine
 from .core.exceptions import register_exception_handlers
 from .core.logging_config import setup_logging
 from .api.v1.routers import books, health
+from .external.openlibrary.client import get_openlibrary_client
 
+logger = logging.getLogger(__name__)
 
 # ========== LIFECYCLE EVENTS ==========
 
@@ -27,16 +30,21 @@ async def lifespan(app: FastAPI):
     """
     # Startup
     setup_logging()
-    print("🚀 Application started")
+    logger.info("Application started")
 
     yield
 
     # Shutdown
     await dispose_engine()
-    print("👋 Application stopped")
+    ol_client = get_openlibrary_client()
+    await ol_client.close()
+    logger.info("Application stopped")
 
 
 # ========== CREATE APP ==========
+
+if settings.is_production and "*" in settings.cors_origins:
+    raise ValueError("Wildcard CORS origins not allowed in production")
 
 app = FastAPI(
     title=settings.app_name,
