@@ -2,7 +2,6 @@ from uuid import UUID
 from ...api.v1.schemas.book import BookCreate, BookUpdate, ShowBook
 from ...data.repositories.book_repository import BookRepository
 from ...external.openlibrary.client import OpenLibraryClient
-from ..mappers.book_mapper import BookMapper
 from ..exceptions import (
     BookNotFoundException,
     BookAlreadyExistsException,
@@ -73,7 +72,7 @@ class BookService:
         await self.book_repo.session.commit()
 
         # 5. Маппинг в DTO
-        return BookMapper.to_show_book(book)
+        return ShowBook.model_validate(book)
 
     async def get_book(self, book_id: UUID) -> ShowBook:
         """
@@ -86,7 +85,7 @@ class BookService:
         if book is None:
             raise BookNotFoundException(book_id)
 
-        return BookMapper.to_show_book(book)
+        return ShowBook.model_validate(book)
 
     async def update_book(
             self,
@@ -115,7 +114,7 @@ class BookService:
             **book_data.model_dump(exclude_unset=True)
         )
         await self.book_repo.session.commit()
-        return BookMapper.to_show_book(updated)
+        return ShowBook.model_validate(updated)
 
     async def delete_book(self, book_id: UUID) -> None:
         """
@@ -166,7 +165,7 @@ class BookService:
             available=available,
         )
 
-        return BookMapper.to_show_books(books), total
+        return [ShowBook.model_validate(b) for b in books], total
 
     # ========== ПРИВАТНЫЕ МЕТОДЫ ==========
 
