@@ -1,5 +1,6 @@
 from .base_repository import BaseRepository
 from ...data.models.book import Book
+from ...api.v1.schemas.book import BookCreate
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -8,6 +9,22 @@ from sqlalchemy import select, func
 class BookRepository(BaseRepository[Book]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Book)
+
+    async def create(self, book_data: BookCreate, extra: dict | None = None) -> Book:
+        instance = Book(
+            title=book_data.title,
+            author=book_data.author,
+            isbn=book_data.isbn,
+            year=book_data.year,
+            genre=book_data.genre,
+            pages=book_data.pages,
+            description=book_data.description,
+            extra=extra,
+        )
+        self.session.add(instance)
+        await self.session.flush()
+        await self.session.refresh(instance)
+        return instance
 
     def _apply_filters(self, query, title, author, genre, year, available):
         if title is not None:
@@ -34,7 +51,7 @@ class BookRepository(BaseRepository[Book]):
     ) -> list[Book]:
         """Поиск книг с фильтрацией."""
         query = select(Book)
-        query = self._apply_filters(query, title, author, genre,year, available)
+        query = self._apply_filters(query, title, author, genre, year, available)
         query = query.limit(limit).offset(offset)
 
         result = await self.session.execute(query)
