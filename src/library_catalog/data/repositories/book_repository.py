@@ -17,9 +17,9 @@ class BookRepository(BaseRepository[Book]):
         if genre is not None:
             query = query.where(Book.genre.ilike(f"%{genre}%"))
         if year is not None:
-            query = query.where(Book.year.ilike(f"%{year}%"))
+            query = query.where(Book.year == year)
         if available is not None:
-            query = query.where(Book.available.ilike(f"%{available}%"))
+            query = query.where(Book.available == available)
         return query
 
     async def find_by_filters(
