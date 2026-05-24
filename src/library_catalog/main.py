@@ -38,6 +38,9 @@ async def lifespan(app: FastAPI):
 
 # ========== CREATE APP ==========
 
+if settings.is_production and "*" in settings.cors_origins:
+    raise ValueError("Wildcard CORS origins not allowed in production")
+
 app = FastAPI(
     title=settings.app_name,
     description="REST API для управления библиотечным каталогом",
