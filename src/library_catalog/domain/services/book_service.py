@@ -1,4 +1,7 @@
 from uuid import UUID
+from datetime import datetime
+import logging
+
 from ...api.v1.schemas.book import BookCreate, BookUpdate, ShowBook
 from ...data.repositories.book_repository import BookRepository
 from ...external.openlibrary.client import OpenLibraryClient
@@ -9,6 +12,8 @@ from ..exceptions import (
     InvalidPagesException,
     OpenLibraryTimeoutException,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class BookService:
@@ -176,7 +181,6 @@ class BookService:
 
     def _validate_year(self, year: int) -> None:
         """Проверить что год валиден."""
-        from datetime import datetime
 
         current_year = datetime.now().year
         if year < 1000 or year > current_year:
@@ -205,8 +209,6 @@ class BookService:
             return extra if extra else None
         except OpenLibraryTimeoutException:
             # Логируем но не прерываем создание книги
-            import logging
-            logger = logging.getLogger(__name__)
             logger.warning(
                 "Failed to enrich book data from Open Library",
                 extra={"title": book_data.title, "author": book_data.author}
