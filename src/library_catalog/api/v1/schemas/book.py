@@ -7,7 +7,7 @@ class BookBase(BaseModel):
     """Базовая схема с общими полями."""
     title: str = Field(..., min_length=1, max_length=500)
     author: str = Field(..., min_length=1, max_length=300)
-    year: int = Field(..., ge=1000, le=2100)
+    year: int = Field(..., ge=1000)
     genre: str = Field(..., min_length=1, max_length=100)
     pages: int = Field(..., gt=0)
 
@@ -58,7 +58,7 @@ class BookUpdate(BaseModel):
     """Схема для обновления книги (все поля опциональны)."""
     title: str | None = Field(None, min_length=1, max_length=500)
     author: str | None = Field(None, min_length=1, max_length=300)
-    year: int | None = Field(None, ge=1000, le=2100)
+    year: int | None = Field(None, ge=1000)
     genre: str | None = Field(None, min_length=1, max_length=100)
     pages: int | None = Field(None, gt=0)
     available: bool | None = None
